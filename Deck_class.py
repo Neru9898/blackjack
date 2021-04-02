@@ -1,5 +1,5 @@
 import random
-import numpy as np
+import numpy 
 class Card:
 
     def __init__(self):
@@ -71,40 +71,123 @@ class BlackJack:
     def __init__(self):
         self.card_class = Card()
         self.deck_class = Deck()
-        self.game_value = self.card_class.card_value
+        self.card_value = None
         self.game_deck = self.deck_class.deck
-        # self.player_hand = np.array([])
-        # self.house_hand = np.array([])
+        self.player_hand = numpy.array([])
+        self.house_hand = numpy.array([])
+        self.current = ()
 
     
     def current_hand(self):
-        current = self.deck_class.draw_card()
+        self.current = self.deck_class.draw_card()
         # deck_status = self.deck_class.deck_empty_check()
         if (self.deck_class.deck_status_empty  != True):
             self.deck_class.pop_deck()
-            print(current)
-            return current
+            # print(current)
         else:
-            self.game_reset()
+            pass
             
+    def game_rule(self,hand):
+        if self.add_cards(hand) > 21:
+            return True
+        elif self.add_cards(hand) == 21:
+            return False
+        else:
+            pass
 
-        
-    def value_of_hand(self,hand):
-        current_suits, current_num_drawn, current_index_num  = self.current_hand()
+    def player_hand_game(self):
+        if (self.deck_class.deck_status_empty  != True):
+            current_suits, current_num_drawn, current_index_num  = self.current 
+            self.card_value = self.card_class.card_value[current_num_drawn]
+            self.player_hand = numpy.append(self.player_hand,self.card_value)
+        else:
+            pass
 
+    def house_hand_game(self):
+        current_suits, current_num_drawn, current_index_num  = self.current
+        self.card_value = self.card_class.card_value[current_num_drawn]
+        self.house_hand = numpy.append(self.house_hand,self.card_value)
+
+    def empty_hand(self):
+        self.player_hand = numpy.array([])
+        self.house_hand = numpy.array([])
+
+
+    def num_of_cards(self,hand):
+        return numpy.size(hand)
+
+
+    def add_cards(self,hand):
+        if self.num_of_cards(hand) >= 2:
+            return numpy.sum(hand)
+        else:
+            pass
+    
     def game_reset(self):
         reset = input("Deck is empty, Do you want to cont or no:")
         if reset == 'y':
             self.deck_class.reset_deck()
             self.current_hand()
         else:
-            print('bye',self.game_deck)
+            print('bye')
 
+
+
+black_jack = BlackJack()
+print()
+game_start = input("You wanna play:")
+while game_start == 'y':
+   
+    try:
+        if black_jack.deck_class.deck_status_empty == True:
+            black_jack.game_reset()
+            break
+    except:
+        pass
+
+    if black_jack.num_of_cards(black_jack.player_hand) < 2:
+        black_jack.current_hand()
+        black_jack.player_hand_game()
+
+    
+    if black_jack.num_of_cards(black_jack.player_hand) >= 2:
+        print(black_jack.player_hand)
+        print(black_jack.add_cards(black_jack.player_hand))
+        hit = input('you wanna hit:')
+
+        if hit == 'y' and black_jack.deck_class.deck_status_empty != True:
+            black_jack.current_hand()
+            black_jack.player_hand_game()
+        
+        try:
+            if black_jack.game_rule(black_jack.player_hand):
+                print('YOU LOST')
+                game_start = input("You wanna play again:")
+                black_jack.empty_hand()
             
+        except:
+            pass
+        
+        try:
+            if black_jack.game_rule(black_jack.player_hand) == False:
+                print('YOU WON')
+                print(black_jack.player_hand)
+                print(black_jack.add_cards(black_jack.player_hand))
+                game_start = input("You wanna play again:")
+                black_jack.empty_hand()
+            
+        except:
+            pass
+
+        try:
+            if hit != 'y':
+                game_start = input("You wanna play again:")
+                black_jack.empty_hand()
+        except:
+            pass
 
 
-f = BlackJack()
-i = 0
-while i < 56:
-    i += 1
-    f.current_hand()
+print('Thanks',black_jack.game_deck)
+     
+    
+
