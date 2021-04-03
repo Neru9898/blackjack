@@ -76,6 +76,7 @@ class BlackJack:
         self.player_hand = numpy.array([])
         self.house_hand = numpy.array([])
         self.current = ()
+        self.game_results = None
 
     
     def current_hand(self):
@@ -87,10 +88,10 @@ class BlackJack:
         else:
             pass
             
-    def game_rule(self,hand):
-        if self.add_cards(hand) > 21:
+    def game_rule(self,player_hand):
+        if self.add_cards(player_hand) > 21:
             return True
-        elif self.add_cards(hand) == 21:
+        elif self.add_cards(player_hand) == 21:
             return False
         else:
             pass
@@ -100,18 +101,18 @@ class BlackJack:
             current_suits, current_num_drawn, current_index_num  = self.current 
             self.card_value = self.card_class.card_value[current_num_drawn]
             self.player_hand = numpy.append(self.player_hand,self.card_value)
-        else:
-            pass
+  
 
     def house_hand_game(self):
-        current_suits, current_num_drawn, current_index_num  = self.current
-        self.card_value = self.card_class.card_value[current_num_drawn]
-        self.house_hand = numpy.append(self.house_hand,self.card_value)
-
+        if (self.deck_class.deck_status_empty  != True):
+            current_suits, current_num_drawn, current_index_num  = self.current
+            self.card_value = self.card_class.card_value[current_num_drawn]
+            self.house_hand = numpy.append(self.house_hand,self.card_value)
+  
     def empty_hand(self):
         self.player_hand = numpy.array([])
         self.house_hand = numpy.array([])
-
+        self.game_results = None
 
     def num_of_cards(self,hand):
         return numpy.size(hand)
@@ -131,63 +132,115 @@ class BlackJack:
         else:
             print('bye')
 
+    def house_brain(self):
+        player = self.add_cards(self.player_hand)
+        house = self.add_cards(self.house_hand)
+
+        if (house < player or house <= 21) and player <= 21:
+            print('House turn')
+            self.current_hand() 
+            self.house_hand_game()
+            print(self.house_hand)
+            print(black_jack.add_cards(black_jack.house_hand))
+            if True:
+                self.house_brain()
+        elif (house > player and house <= 21) or (house <= 21 and player != 21) or player > 21:
+            self.game_results = "House"
+        elif (player > house and player <= 21) or (player <= 21 and house != 21) or (house > 21):
+            self.game_results = "Player"
+        elif house == player:
+            self.game_results = "Draw"
+        else:
+            print('plz')
+            pass
+        
+
 
 
 black_jack = BlackJack()
 print()
 game_start = input("You wanna play:")
 while game_start == 'y':
-   
+    # ensure to check deck is full when drawing
     try:
         if black_jack.deck_class.deck_status_empty == True:
             black_jack.game_reset()
-            break
     except:
         pass
 
-    if black_jack.num_of_cards(black_jack.player_hand) < 2:
+    # Dealing cards for both house and player
+    if black_jack.num_of_cards(black_jack.player_hand) < 2 and  black_jack.num_of_cards(black_jack.house_hand) < 2:
         black_jack.current_hand()
         black_jack.player_hand_game()
-
+        black_jack.current_hand()
+        black_jack.house_hand_game()
     
     if black_jack.num_of_cards(black_jack.player_hand) >= 2:
+        print("House")
+        print(black_jack.house_hand)
+        print(black_jack.add_cards(black_jack.house_hand))
+        print("You")
         print(black_jack.player_hand)
         print(black_jack.add_cards(black_jack.player_hand))
-        hit = input('you wanna hit:')
+        hit = input('Hit or Stay:')
 
         if hit == 'y' and black_jack.deck_class.deck_status_empty != True:
             black_jack.current_hand()
             black_jack.player_hand_game()
         
-        try:
-            if black_jack.game_rule(black_jack.player_hand):
-                print('YOU LOST')
-                game_start = input("You wanna play again:")
-                black_jack.empty_hand()
+
+        # try:
+        #     if black_jack.game_rule(black_jack.player_hand) == False:
+        #         print('YOU WON')
+        #         print(black_jack.player_hand)
+        #         print(black_jack.add_cards(black_jack.player_hand))
+        #         game_start = input("You wanna play again:")
+        #         black_jack.empty_hand()
             
-        except:
-            pass
+        # except:
+        #     pass
+
+    
+        if (hit != 'y' and black_jack.game_results == None) or black_jack.game_rule(black_jack.player_hand):
+            black_jack.house_brain()
+
+        # try:
+        #     if black_jack.game_rule(black_jack.player_hand):
+        #         print('YOU LOST')
+        #         print(black_jack.player_hand)
+        #         print(black_jack.add_cards(black_jack.player_hand))
+        #         game_start = input("You wanna play again:")
+        #         black_jack.empty_hand()
+            
+        # except:
+        #     pass
         
-        try:
-            if black_jack.game_rule(black_jack.player_hand) == False:
-                print('YOU WON')
-                print(black_jack.player_hand)
-                print(black_jack.add_cards(black_jack.player_hand))
-                game_start = input("You wanna play again:")
-                black_jack.empty_hand()
-            
-        except:
-            pass
-
-        try:
-            if hit != 'y':
-                game_start = input("You wanna play again:")
-                black_jack.empty_hand()
-        except:
-            pass
 
 
-print('Thanks',black_jack.game_deck)
+        
+        if black_jack.game_results == 'House':
+            print("House")
+            # print(black_jack.house_hand)
+            print(black_jack.add_cards(black_jack.house_hand))
+            print("You",black_jack.game_results)
+            # print(black_jack.player_hand)
+            print(black_jack.add_cards(black_jack.player_hand))
+            game_start = input("House wins, You wanna play again:")
+            black_jack.empty_hand()
+        elif black_jack.game_results == 'Player':
+            print("House")
+            # print(black_jack.house_hand)
+            print(black_jack.add_cards(black_jack.house_hand))
+            print("You")
+            # print(black_jack.player_hand)
+            print(black_jack.add_cards(black_jack.player_hand))
+            game_start = input("Player wins, You wanna play again:")
+            black_jack.empty_hand()
+        elif black_jack.game_results == 'Draw':
+            game_start = input("Issa Draw ya both wankers, You wanna play again tho:")
+            black_jack.empty_hand()
+
+print('Thanks u twat')
      
     
 
