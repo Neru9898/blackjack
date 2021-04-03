@@ -81,7 +81,6 @@ class BlackJack:
     
     def current_hand(self):
         self.current = self.deck_class.draw_card()
-        # deck_status = self.deck_class.deck_empty_check()
         if (self.deck_class.deck_status_empty  != True):
             self.deck_class.pop_deck()
             # print(current)
@@ -131,6 +130,7 @@ class BlackJack:
             self.current_hand()
         else:
             print('bye')
+            self.game_results = 'Done'
 
     def house_brain(self):
         player = self.add_cards(self.player_hand)
@@ -167,6 +167,10 @@ while game_start == 'y':
             black_jack.game_reset()
     except:
         pass
+
+
+    if black_jack.game_results == 'Done':
+        break
 
     # Dealing cards for both house and player
     if black_jack.num_of_cards(black_jack.player_hand) < 2 and  black_jack.num_of_cards(black_jack.house_hand) < 2:
