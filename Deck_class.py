@@ -78,7 +78,7 @@ class House:
 
 
 class BlackJack:
-    
+
     def __init__(self):
         self.card_class = Card()
 
@@ -103,7 +103,6 @@ class BlackJack:
         self.current = self.deck_class.draw_card()
         if (self.deck_class.deck_status_empty  != True):
             self.deck_class.pop_deck()
-            # print(current)
         else:
             pass
             
