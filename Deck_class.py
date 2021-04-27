@@ -65,23 +65,40 @@ class Deck:
 
         
     
-            
+
+class Player:
+
+    def __init__(self):
+        pass
+class House:
+    
+    def __init__(self):
+        pass
+    
 
 
 class BlackJack:
     
     def __init__(self):
         self.card_class = Card()
+
         self.deck_class = Deck()
+        
         self.card_value = None
+        
         self.game_deck = self.deck_class.deck
+        
         self.player_hand = numpy.array([])
+        
         self.player_hand_suite = numpy.array([])
+        
         self.house_hand = numpy.array([])
+        
         self.current = ()
+        
         self.game_results = None
 
-    
+
     def current_hand(self):
         self.current = self.deck_class.draw_card()
         if (self.deck_class.deck_status_empty  != True):
@@ -103,8 +120,6 @@ class BlackJack:
             current_suits, current_num_drawn, current_index_num  = self.current 
             self.card_value = self.card_class.card_value[current_num_drawn]
             self.player_hand = numpy.append(self.player_hand,self.card_value)
-            # self.player_hand_suite = numpy.append(self.player_hand_suite, (current_suits, current_index_num))
-
   
     def house_hand_game(self):
         if (self.deck_class.deck_status_empty  != True):
@@ -137,13 +152,6 @@ class BlackJack:
             self.game_results = 'Done'
 
 
-    def player_split(self):
-
-        if self.num_of_cards(self.player_hand) >= 2 and self.player_hand[0] == self.player_hand[1]:
-            split = input("You want to split: ")
-            if split == "y":
-                self.player_hand = numpy.split(self.player_hand,2)
-
     def player_double_down(self):
         if self.num_of_cards(self.player_hand) >= 2:
             double_down = input("Double Down: ")
@@ -167,15 +175,14 @@ class BlackJack:
     def black_jack_logic(self):
         player = self.add_cards(self.player_hand)
         house = self.add_cards(self.house_hand)
-        if isinstance(player, list):
-            if (house > player and house <= 21) or (house <= 21 and player != 21) or player > 21:
-                self.game_results = "House"
-            elif (player > house and player <= 21) or (player <= 21 and house != 21) or (house > 21):
-                self.game_results = "Player"
-            elif house == player:
-                self.game_results = "Draw"
-            else:
-                pass
+        if (house > player and house <= 21) or (house <= 21 and player != 21) or player > 21:
+            self.game_results = "House"
+        elif (player > house and player <= 21) or (player <= 21 and house != 21) or (house > 21):
+            self.game_results = "Player"
+        elif house == player:
+            self.game_results = "Draw"
+        else:
+            pass
 
 
 
